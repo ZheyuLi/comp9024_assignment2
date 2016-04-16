@@ -152,7 +152,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		}
 		int merged_tree_size = merged_array.size();
 		//merged_tree = merged_tree_size;
-		merged_tree.addRoot(MergedArray2AVLTree(0,(merged_array.size()-1), merged_array,merged_tree).element());
+		merged_tree.root = MergedArray2AVLTree(0,(merged_array.size()-1), merged_array,merged_tree);
 		merged_tree.numEntries = tree1.size() + tree2.size();
 		//assign null to tree1 and tree 2 for GC
 		tree1 = null;
