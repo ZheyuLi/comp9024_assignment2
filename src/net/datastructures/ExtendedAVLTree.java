@@ -12,9 +12,6 @@ import datastructures.AVLTree.AVLNode;
 
 import java.awt.*;
 
-
-
-
 /*Q1:Clone an AVLTree and return a reference to the cloned new AVLTree object.
  */
 public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
@@ -131,7 +128,6 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		
 	}
 
-	
 	public static <K, V> AVLTree<K, V> clone(AVLTree<K,V> tree)
 	{
 		AVLTree<K,V> cloned_tree = new AVLTree<K,V>();
@@ -249,8 +245,8 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		}
 		int merged_tree_size = merged_array.size();
 		//merged_tree = merged_tree_size;
-		
-		merged_tree.root = MergedArray2AVLTree(0,(merged_array.size()-1), merged_array,merged_tree);
+		int height = 0;
+		merged_tree.root = MergedArray2AVLTree(0,(merged_array.size()-1), merged_array,merged_tree,height);
 		merged_tree.numEntries = tree1.size() + tree2.size();
 		
 	
@@ -266,7 +262,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		
 	}
 	
-	protected static <K,V>  BTPosition<Entry<K,V>>  MergedArray2AVLTree(int start, int end, ArrayList<Entry<K,V>> merged_array, AVLTree<K,V> merged_tree)
+	protected static <K,V>  BTPosition<Entry<K,V>>  MergedArray2AVLTree(int start, int end, ArrayList<Entry<K,V>> merged_array, AVLTree<K,V> merged_tree,int height)
 	{
 		if(start > end)
 		{
@@ -275,16 +271,28 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		
 		int mid = start + (end - start)/2;
 		Entry<K,V> parent_element = merged_array.get(mid);
-		BTPosition<Entry<K,V>> leftChild = MergedArray2AVLTree(start,mid-1, merged_array,merged_tree);
-		BTPosition<Entry<K,V>> rightChild = MergedArray2AVLTree(mid+1,end, merged_array,merged_tree);
+		BTPosition<Entry<K,V>> leftChild = MergedArray2AVLTree(start,mid-1, merged_array,merged_tree,height);
+		BTPosition<Entry<K,V>> rightChild = MergedArray2AVLTree(mid+1,end, merged_array,merged_tree,height);
 		BTPosition<Entry<K,V>> parent = merged_tree.createNode(parent_element, null, leftChild, rightChild);
 		parent.setLeft(leftChild);
 		parent.setRight(rightChild);
 		merged_tree.size = merged_tree.size+2;
 		
-		if(leftChild != null||rightChild!=null)
+		if((leftChild == null) && (rightChild == null))
 		{
-			((AVLNode<K,V>)(merged_tree.root)).height++;
+			((AVLNode<K,V>)(parent)).setHeight(1);
+		}
+		else if(leftChild == null)
+		{
+			((AVLNode<K,V>)(parent)).setHeight(1+((AVLNode<K,V>)(rightChild)).height);
+		}
+		else if(rightChild == null)
+		{
+			((AVLNode<K,V>)(parent)).setHeight(1+((AVLNode<K,V>)(leftChild)).height);
+		}
+		else
+		{
+			((AVLNode<K,V>)(parent)).setHeight(1+Math.max(((AVLNode<K,V>)(leftChild)).height,((AVLNode<K,V>)(rightChild)).height));
 		}
 
 		//System.out.println("the size of merged_tree is");
@@ -315,20 +323,19 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		JFrame treeFrame = new JFrame();
 		JPanel treePanel = new JPanel();
 		//treeFrame.getContentPane().add(treePanel);
-		int frame_width = 1000;
+		int frame_width = 900;
 		int frame_height = 800;
 		treeFrame.setSize(frame_width, frame_height);
 		treeFrame.setTitle("COMP9024 Assignment Two - Question3");
 		treeFrame.setVisible(true);
+		treeFrame.setResizable(false); 
+		int height_of_tree = ((AVLNode<K,V>)(tree.root)).height;
+		System.out.print(height_of_tree);
 		drawSubTree(tree.root,treeFrame,frame_width/2,frame_height/2);
-		
 	}
 	
 	public static <K,V> void drawSubTree(BTPosition<Entry<K,V>> root, JFrame frame, int x, int y)
 	{
-		frame.getContentPane().add(new InternalNode(5,20,10));
-
+		frame.getContentPane().add(new InternalNode(x,y,20));
 	}
-
-	
 }
