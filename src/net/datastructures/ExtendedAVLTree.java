@@ -6,11 +6,107 @@
 package datastructures;
 import java.util.*;
 
+import javax.swing.*;
+
+import datastructures.AVLTree.AVLNode;
+
+import java.awt.*;
+
+
+
 
 /*Q1:Clone an AVLTree and return a reference to the cloned new AVLTree object.
  */
 public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 {
+	/**
+	 * As the draw methods can only be called by extending JComponent, we define some classes for nodes,
+	 * edges and node contents. JComponent is extending java.awt.component as well. 
+	 */
+	// Define graphical class for internal nodes. 
+    protected static class InternalNode extends JComponent {
+
+        private static final long serialVersionUID = 1L; //for serializable class
+        int x = 0;
+        int y = 0;
+        int w = 0;
+        int h = 0;
+        
+        InternalNode(int x, int y, int d) {
+            this.x = x; //use the top of internal node as the position rather than middle point
+            this.y = y;
+            this.w = d; //major axis for the parameters of drawOval
+            this.h = d; //minor axis for the parameters of drawOval
+        }
+        //override the original paint function of component to draw a circle for each internal node.
+        @Override
+        protected void paintComponent(Graphics g) {
+            g.drawOval(x, y, w, h);
+        }
+    }
+
+    // Define graphical class for external nodes. 
+    protected static class Rectangle extends JComponent {
+
+        private static final long serialVersionUID = 1L;
+        int x = 0;
+        int y = 0;
+        int w = 0;
+        int h = 0;
+        
+        Rectangle(int x, int y, int w, int h) {
+            this.x = x; //use the top of internal node as the position rather than middle point
+            this.y = y;
+            this.w = w; //length for the external node 
+            this.h = h; //height for the external node
+        }
+        //override the paint function to draw a rectangle for external nodes. 
+        @Override
+        protected void paintComponent(Graphics g) {
+            g.drawRect(x, y, w, h);
+        }
+    }
+    
+    // Define edges class for connecting nodes.
+    protected static class Edge extends JComponent {
+
+        private static final long serialVersionUID = 1L;
+        int x1 = 0;
+        int y1 = 0;
+        int x2 = 0;
+        int y2 = 0;
+        //(x1,y1) (x2,y2) are the two end of the line.
+        Edge(int x1, int y1, int x2, int y2) {
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2;
+        }
+        //override the paint function to draw a line
+        @Override
+        protected void paintComponent(Graphics g) {
+            g.drawLine(x1, y1, x2, y2);
+        }
+    }
+
+    // Define labels for the content of internal nodes.
+    protected static class Labels extends JComponent {
+        private static final long serialVersionUID = 1L;
+        String s; 
+        int x = 0;
+        int y = 0;
+        
+        Labels(String s, int x, int y) {
+            this.s = s;
+            this.x = x;
+            this.y = y;
+        }
+        
+        @Override
+        protected void paintComponent(Graphics g) {
+            g.drawString(s, x, y);
+        }
+    }
 
 	public static <K, V> void cloneSubTrees(BTPosition<Entry<K,V>> old_root, BTPosition<Entry<K,V>> cloned_root)
 	{
@@ -112,7 +208,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			//	System.out.println("first of tree2First is null, delete and the size now is");
 			//	System.out.print(tree2List.size());
 			}
-			if(!tree1List.isEmpty()&&Integer.parseInt(tree1List.first().element().element().getKey().toString())< Integer.parseInt(tree2List.first().element().element().getKey().toString()))
+			if(!tree1List.isEmpty()&&!tree2List.isEmpty()&&Integer.parseInt(tree1List.first().element().element().getKey().toString())< Integer.parseInt(tree2List.first().element().element().getKey().toString()))
 			{
 				merged_array.add(tree1List.first().element().element());
 			//	System.out.print(tree1List.first().element().element().getKey());
@@ -122,10 +218,11 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			//	System.out.print(tree1List.size());
 			}
 			else
-			{
+			{	
+				if(!tree2List.isEmpty()){
 				merged_array.add(tree2List.first().element().element());
 		//		System.out.print(tree2List.first().element().element().getKey());
-				tree2List.remove(tree2List.first());
+				tree2List.remove(tree2List.first());}
 		//		System.out.println("add element and delete, The size of tree2List is");
 			//	System.out.print(tree2List.size());
 			}
@@ -152,8 +249,14 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		}
 		int merged_tree_size = merged_array.size();
 		//merged_tree = merged_tree_size;
+		
 		merged_tree.root = MergedArray2AVLTree(0,(merged_array.size()-1), merged_array,merged_tree);
 		merged_tree.numEntries = tree1.size() + tree2.size();
+		
+	
+		System.out.println("the height of the merged_tree is ");
+		System.out.print(merged_tree.height(merged_tree.root()));
+
 		//assign null to tree1 and tree 2 for GC
 		tree1 = null;
 		tree2 = null;
@@ -178,11 +281,16 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		parent.setLeft(leftChild);
 		parent.setRight(rightChild);
 		merged_tree.size = merged_tree.size+2;
+		
+		if(leftChild != null||rightChild!=null)
+		{
+			((AVLNode<K,V>)(merged_tree.root)).height++;
+		}
+
 		//System.out.println("the size of merged_tree is");
 		//System.out.print(merged_tree.size);
 		if(leftChild != null)
 		{
-			
 			leftChild.setParent(parent);
 		}
 		if(rightChild != null)
@@ -200,6 +308,26 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			System.out.println(parent.element().getKey().toString());
 		}*/
 		return parent;	
+	}
+	
+	public static <K, V> void print(AVLTree<K, V> tree)
+	{
+		JFrame treeFrame = new JFrame();
+		JPanel treePanel = new JPanel();
+		//treeFrame.getContentPane().add(treePanel);
+		int frame_width = 1000;
+		int frame_height = 800;
+		treeFrame.setSize(frame_width, frame_height);
+		treeFrame.setTitle("COMP9024 Assignment Two - Question3");
+		treeFrame.setVisible(true);
+		drawSubTree(tree.root,treeFrame,frame_width/2,frame_height/2);
+		
+	}
+	
+	public static <K,V> void drawSubTree(BTPosition<Entry<K,V>> root, JFrame frame, int x, int y)
+	{
+		frame.getContentPane().add(new InternalNode(5,20,10));
+
 	}
 
 	
