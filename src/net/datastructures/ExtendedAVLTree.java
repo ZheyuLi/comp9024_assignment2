@@ -38,12 +38,13 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
         //override the original paint function of component to draw a circle for each internal node.
         @Override
         protected void paintComponent(Graphics g) {
+        	super.paintComponent(g);
             g.drawOval(x, y, w, h);
         }
     }
 
     // Define graphical class for external nodes. 
-    protected static class Rectangle extends JComponent {
+    protected static class ExternalNode extends JComponent {
 
         private static final long serialVersionUID = 1L;
         int x = 0;
@@ -51,7 +52,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
         int w = 0;
         int h = 0;
         
-        Rectangle(int x, int y, int w, int h) {
+        ExternalNode(int x, int y, int w, int h) {
             this.x = x; //use the top of internal node as the position rather than middle point
             this.y = y;
             this.w = w; //length for the external node 
@@ -250,8 +251,8 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		merged_tree.numEntries = tree1.size() + tree2.size();
 		
 	
-		System.out.println("the height of the merged_tree is ");
-		System.out.print(merged_tree.height(merged_tree.root()));
+	//	System.out.println("the height of the merged_tree is ");
+	//	System.out.print(merged_tree.height(merged_tree.root()));
 
 		//assign null to tree1 and tree 2 for GC
 		tree1 = null;
@@ -330,12 +331,44 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		treeFrame.setVisible(true);
 		treeFrame.setResizable(false); 
 		int height_of_tree = ((AVLNode<K,V>)(tree.root)).height;
+		System.out.println("the height of the whole tree is:");
 		System.out.print(height_of_tree);
-		drawSubTree(tree.root,treeFrame,frame_width/2,frame_height/2);
+		int levels_nums = height_of_tree + 1;
+		int level_height = (int)((frame_height/levels_nums)*0.8);
+		
+		drawSubTree(tree.root,treeFrame,frame_width/2,(int)(0.02*frame_height), level_height);
 	}
 	
-	public static <K,V> void drawSubTree(BTPosition<Entry<K,V>> root, JFrame frame, int x, int y)
+	public static <K,V> void drawSubTree(BTPosition<Entry<K,V>> root, JFrame frame, int x, int y,int level_height)
 	{
 		frame.getContentPane().add(new InternalNode(x,y,20));
+		frame.setVisible(true);
+		//frame.getContentPane().add(new Labels((new StringBuilder(root.element().getKey().toString())).append(" ").append(root.element().getValue().toString()).toString(),x,y));
+		//frame.setVisible(true);
+		BTPosition<Entry<K,V>> leftChild = root.getLeft();
+		BTPosition<Entry<K,V>> rightChild = root.getRight();
+		if(leftChild.element()!=null)
+		{
+			drawSubTree(leftChild,frame,x/2,y+(int)(0.02*frame.getHeight())+level_height, level_height);
+			
+			frame.setVisible(true);
+		}
+		else if(leftChild.element()==null)
+		{
+			frame.getContentPane().add(new ExternalNode(x/2,y+(int)(0.02*frame.getHeight())+level_height,20,20));
+			frame.setVisible(true);
+		}
+		
+		if(rightChild.element()!=null)
+		{
+			drawSubTree(rightChild,frame,(frame.getWidth())/2+x/2,y+(int)(0.02*frame.getHeight())+level_height, level_height);
+			frame.setVisible(true);
+		}
+		else if(rightChild.element()==null)
+		{
+			frame.getContentPane().add(new ExternalNode((frame.getWidth())/2+x/2,y+(int)(0.02*frame.getHeight())+level_height,20,20));
+			frame.setVisible(true);
+		}
+	
 	}
 }
