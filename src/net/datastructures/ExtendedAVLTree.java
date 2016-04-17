@@ -336,37 +336,47 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		int levels_nums = height_of_tree + 1;
 		int level_height = (int)((frame_height/levels_nums)*0.8);
 		
-		drawSubTree(tree.root,treeFrame,frame_width/2,(int)(0.02*frame_height), level_height);
+		drawSubTree(tree.root,treeFrame,0,frame_width,(int)(0.02*frame_height), level_height);
 	}
 	
-	public static <K,V> void drawSubTree(BTPosition<Entry<K,V>> root, JFrame frame, int x, int y,int level_height)
+	public static <K,V> void drawSubTree(BTPosition<Entry<K,V>> root, JFrame frame, int x_l, int x_r, int y,int level_height)
 	{
-		frame.getContentPane().add(new InternalNode(x,y,20));
+		int mid = (x_l+x_r)/2;
+		frame.getContentPane().add(new InternalNode(mid,y,25));
 		frame.setVisible(true);
-		//frame.getContentPane().add(new Labels((new StringBuilder(root.element().getKey().toString())).append(" ").append(root.element().getValue().toString()).toString(),x,y));
-		//frame.setVisible(true);
+		frame.getContentPane().add(new Labels((new StringBuilder(root.element().getKey().toString())).append(" ").append(root.element().getValue().toString()).toString(),mid+6,y+13));
+		frame.setVisible(true);
 		BTPosition<Entry<K,V>> leftChild = root.getLeft();
 		BTPosition<Entry<K,V>> rightChild = root.getRight();
 		if(leftChild.element()!=null)
 		{
-			drawSubTree(leftChild,frame,x/2,y+(int)(0.02*frame.getHeight())+level_height, level_height);
+			drawSubTree(leftChild,frame,x_l,mid,y+level_height, level_height);
 			
+			frame.setVisible(true);
+			frame.getContentPane().add(new Edge(mid,y,(x_l+mid)/2,y+level_height));
 			frame.setVisible(true);
 		}
 		else if(leftChild.element()==null)
 		{
-			frame.getContentPane().add(new ExternalNode(x/2,y+(int)(0.02*frame.getHeight())+level_height,20,20));
+			frame.getContentPane().add(new ExternalNode((x_l+mid)/2,y+level_height,20,20));
+			frame.setVisible(true);
+			frame.getContentPane().add(new Edge(mid,y,(x_l+mid)/2,y+level_height));
 			frame.setVisible(true);
 		}
 		
 		if(rightChild.element()!=null)
 		{
-			drawSubTree(rightChild,frame,(frame.getWidth())/2+x/2,y+(int)(0.02*frame.getHeight())+level_height, level_height);
+			drawSubTree(rightChild,frame,mid,x_r,y+level_height, level_height);
+			frame.setVisible(true);
+			frame.getContentPane().add(new Edge(mid,y,(mid+x_r)/2,y+level_height));
 			frame.setVisible(true);
 		}
 		else if(rightChild.element()==null)
 		{
-			frame.getContentPane().add(new ExternalNode((frame.getWidth())/2+x/2,y+(int)(0.02*frame.getHeight())+level_height,20,20));
+			frame.getContentPane().add(new ExternalNode((mid+x_r)/2,y+level_height,20,20));
+			frame.setVisible(true);
+			frame.getContentPane().add(new Edge(mid,y,(mid+x_r)/2,y+level_height));
+
 			frame.setVisible(true);
 		}
 	
