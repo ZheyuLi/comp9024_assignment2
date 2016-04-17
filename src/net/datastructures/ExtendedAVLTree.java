@@ -30,7 +30,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
         int h = 0;
         
         InternalNode(int x, int y, int d) {
-            this.x = x; //use the top of internal node as the position rather than middle point
+            this.x = x; //(x,y) is the position of the internal node. 
             this.y = y;
             this.w = d; //major axis for the parameters of drawOval
             this.h = d; //minor axis for the parameters of drawOval
@@ -53,7 +53,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
         int h = 0;
         
         ExternalNode(int x, int y, int w, int h) {
-            this.x = x; //use the top of internal node as the position rather than middle point
+            this.x = x; //(x,y) is the position of the external node. 
             this.y = y;
             this.w = w; //length for the external node 
             this.h = h; //height for the external node
@@ -142,6 +142,17 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 	
 	/*Q2:Merge two AVLTree and return the reference of the merged tree. 
 	 */
+	
+	/*
+	 * Analyzation of the time complexity of our algorithm. Assume the size of the tree tress are 
+	 * m and n repectively. Firstly, we use inorder traversal to get a sorted list of the elements 
+	 * in two AVL trees. The time complexity for this is O(m+n). Then, we merge the two lists into 
+	 * an sorted array. The time complexity is similar as we need to scan both the two lists. So it's
+	 * O(m+n) again. Finally, we use the sorted array to generate a new AVLTree as the merged tree. 
+	 * Each element in the sorted array would be accessed once. And the time used for maintaining the 
+	 * pointers of nodes is a constant. So the complexity is also O(m+n). Overall, the time complexity 
+	 * of our algorithm is O(m+n). 
+	 */
 	public static <K, V> AVLTree<K, V> merge(AVLTree<K,V> tree1, AVLTree<K,V> tree2)
 	{
 		AVLTree<K,V> merged_tree = new AVLTree<K,V>();
@@ -151,77 +162,31 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		
 		tree1.inorderPositions(tree1.root(),tree1List);
 		tree2.inorderPositions(tree2.root(),tree2List);
-		
-		/*System.out.println("traversal tree1list");
-		Iterator<Position<Entry<K,V>>> it11 = tree1List.iterator();
-		while(it11.hasNext())
-		{
-			Entry<K,V> tmp1 = it11.next().element();
-			if(tmp1 == null)
-			{
-				System.out.println("null");
-			}
-			else
-			{
-				System.out.println(tmp1.getKey().toString());
-			}
-		}
-		
-		System.out.println("traversal tree2list");
-		Iterator<Position<Entry<K,V>>> it12 = tree2List.iterator();
-		while(it12.hasNext())
-		{
-			Entry<K,V> tmp2 = it12.next().element();
-			if(tmp2 == null)
-			{
-				System.out.println("null");
-			}
-			else
-			{
-			//	System.out.println(tmp2.getKey().toString());
-			}
-		}*/
+
 		ArrayList<Entry<K,V>> merged_array = new ArrayList<Entry<K,V>>();
 
 		
 		while((tree1List.size()>0)&&(tree2List.size()>0))
 		{
-		//	Entry<K,V> tree1first = tree1List.first().element().element();
-
-		//	Entry<K,V> tree2first = tree2List.first().element().element();
 			
 			while(!tree1List.isEmpty()&&(tree1List.first().element().element() == null))
 			{
-
 				tree1List.remove(tree1List.first());
-			//	System.out.println("first of tree1First is null, delete and the size now is");
-			//	System.out.print(tree1List.size());
 			}
 			while(!tree2List.isEmpty()&&(tree2List.first().element().element() == null))
 			{
-
 				tree2List.remove(tree2List.first());
-			
-			//	System.out.println("first of tree2First is null, delete and the size now is");
-			//	System.out.print(tree2List.size());
 			}
 			if(!tree1List.isEmpty()&&!tree2List.isEmpty()&&Integer.parseInt(tree1List.first().element().element().getKey().toString())< Integer.parseInt(tree2List.first().element().element().getKey().toString()))
 			{
 				merged_array.add(tree1List.first().element().element());
-			//	System.out.print(tree1List.first().element().element().getKey());
 				tree1List.remove(tree1List.first());
-			//	System.out.println("add element and delete, The size of tree1List is");
-			
-			//	System.out.print(tree1List.size());
 			}
 			else
 			{	
 				if(!tree2List.isEmpty()){
 				merged_array.add(tree2List.first().element().element());
-		//		System.out.print(tree2List.first().element().element().getKey());
 				tree2List.remove(tree2List.first());}
-		//		System.out.println("add element and delete, The size of tree2List is");
-			//	System.out.print(tree2List.size());
 			}
 
 		}
@@ -249,15 +214,11 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		int height = 0;
 		merged_tree.root = MergedArray2AVLTree(0,(merged_array.size()-1), merged_array,merged_tree,height);
 		merged_tree.numEntries = tree1.size() + tree2.size();
-		
-	
-	//	System.out.println("the height of the merged_tree is ");
-	//	System.out.print(merged_tree.height(merged_tree.root()));
 
-		//assign null to tree1 and tree 2 for GC
+
+		//assign null to tree1 and tree 2 for garbage collection.
 		tree1 = null;
 		tree2 = null;
-	
 		
 		return merged_tree;
 		
@@ -278,7 +239,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		parent.setLeft(leftChild);
 		parent.setRight(rightChild);
 		merged_tree.size = merged_tree.size+2;
-		
+		//the following code is used to maintain the height of AVLtree. 
 		if((leftChild == null) && (rightChild == null))
 		{
 			((AVLNode<K,V>)(parent)).setHeight(1);
@@ -296,8 +257,6 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			((AVLNode<K,V>)(parent)).setHeight(1+Math.max(((AVLNode<K,V>)(leftChild)).height,((AVLNode<K,V>)(rightChild)).height));
 		}
 
-		//System.out.println("the size of merged_tree is");
-		//System.out.print(merged_tree.size);
 		if(leftChild != null)
 		{
 			leftChild.setParent(parent);
@@ -307,15 +266,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			
 			rightChild.setParent(parent);
 		}
-		
-		/*if(parent.element() ==  null)
-		{
-			System.out.println("null");
-		}
-		else
-		{
-			System.out.println(parent.element().getKey().toString());
-		}*/
+
 		return parent;	
 	}
 	
@@ -338,12 +289,17 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		
 		drawSubTree(tree.root,treeFrame,0,frame_width,(int)(0.02*frame_height), level_height);
 	}
-	
+	/*
+	 * The parameters of this recursive function are, root is the node to be painted. x_l and x_r is would 
+	 * determine the position of root as root would be located in the middle of them. y is the y-axis of 
+	 * root. level_height is the height of each level. Because we use height of the tree to adjust the 
+	 * positions of the nodes of an AVLtree.
+	 */
 	public static <K,V> void drawSubTree(BTPosition<Entry<K,V>> root, JFrame frame, int x_l, int x_r, int y,int level_height)
 	{
 		int mid = (x_l+x_r)/2;
 		frame.getContentPane().add(new InternalNode(mid,y,25));
-		frame.setVisible(true);
+		frame.setVisible(true); //set the frame visable everytime or the new added component would not be displayed.
 		frame.getContentPane().add(new Labels((new StringBuilder(root.element().getKey().toString())).append(" ").append(root.element().getValue().toString()).toString(),mid+6,y+13));
 		frame.setVisible(true);
 		BTPosition<Entry<K,V>> leftChild = root.getLeft();
