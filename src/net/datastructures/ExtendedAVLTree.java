@@ -12,8 +12,7 @@ import datastructures.AVLTree.AVLNode;
 
 import java.awt.*;
 
-/*Q1:Clone an AVLTree and return a reference to the cloned new AVLTree object.
- */
+
 public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 {
 	/**
@@ -105,7 +104,14 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
             g.drawString(s, x, y);
         }
     }
-
+    /*Q1:Clone an AVLTree and return a reference to the cloned new AVLTree object.
+     */
+    
+    /*
+     * The method clondSubTress is a recursive function. According to the algorithm, every node in the original tree would be accessed once. And the operations
+     * used to modify the pointers of parent and children take constant amount of time. Therefore, the time complexity of clone is O(n) where n is the size of
+     * the original tree.
+     */
 	public static <K, V> void cloneSubTrees(BTPosition<Entry<K,V>> old_root, BTPosition<Entry<K,V>> cloned_root)
 	{
 		BTPosition<Entry<K,V>> old_leftChild = old_root.getLeft();
@@ -116,7 +122,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			AVLNode<K,V> cloned_leftchild = new AVLNode<K,V>(old_leftChild.element(),null,null,null);
 			cloned_root.setLeft(cloned_leftchild);
 			cloned_leftchild.setParent(cloned_root);
-			cloneSubTrees(cloned_leftchild, cloned_root.getLeft());
+			cloneSubTrees(old_leftChild, cloned_root.getLeft());
 			
 		}
 		if(old_rightChild!=null)
@@ -124,7 +130,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			AVLNode<K,V> cloned_rightchild = new AVLNode<K,V>(old_rightChild.element(),null,null,null);
 			cloned_root.setRight(cloned_rightchild);
 			cloned_rightchild.setParent(cloned_root);
-			cloneSubTrees(cloned_rightchild, cloned_root.getRight());
+			cloneSubTrees(old_rightChild, cloned_root.getRight());
 		}	
 		
 	}
@@ -135,7 +141,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		cloned_tree.addRoot(tree.root().element());
 		cloneSubTrees(tree.root,cloned_tree.root);
 		cloned_tree.size = tree.size();
-		
+		((AVLNode<K,V>)cloned_tree.root).height = ((AVLNode<K,V>)tree.root).height; //maintain the height of tree, because we use this to adjust the nodes and edges in print().
 		return cloned_tree;
 
 	}
@@ -284,7 +290,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		int height_of_tree = ((AVLNode<K,V>)(tree.root)).height;
 		System.out.println("the height of the whole tree is:");
 		System.out.print(height_of_tree);
-		int levels_nums = height_of_tree + 1;
+		int levels_nums = height_of_tree;
 		int level_height = (int)((frame_height/levels_nums)*0.8);
 		
 		drawSubTree(tree.root,treeFrame,0,frame_width,(int)(0.02*frame_height), level_height);
@@ -309,14 +315,14 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			drawSubTree(leftChild,frame,x_l,mid,y+level_height, level_height);
 			
 			frame.setVisible(true);
-			frame.getContentPane().add(new Edge(mid,y,(x_l+mid)/2,y+level_height));
+			frame.getContentPane().add(new Edge(mid+10,y+23,(x_l+mid)/2+10,y+level_height));
 			frame.setVisible(true);
 		}
 		else if(leftChild.element()==null)
 		{
-			frame.getContentPane().add(new ExternalNode((x_l+mid)/2,y+level_height,20,20));
+			frame.getContentPane().add(new ExternalNode((x_l+mid)/2-10,y+level_height,20,20));
 			frame.setVisible(true);
-			frame.getContentPane().add(new Edge(mid,y,(x_l+mid)/2,y+level_height));
+			frame.getContentPane().add(new Edge(mid+10,y+23,(x_l+mid)/2,y+level_height));
 			frame.setVisible(true);
 		}
 		
@@ -324,14 +330,14 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		{
 			drawSubTree(rightChild,frame,mid,x_r,y+level_height, level_height);
 			frame.setVisible(true);
-			frame.getContentPane().add(new Edge(mid,y,(mid+x_r)/2,y+level_height));
+			frame.getContentPane().add(new Edge(mid+10,y+23,(mid+x_r)/2+10,y+level_height));
 			frame.setVisible(true);
 		}
 		else if(rightChild.element()==null)
 		{
-			frame.getContentPane().add(new ExternalNode((mid+x_r)/2,y+level_height,20,20));
+			frame.getContentPane().add(new ExternalNode((mid+x_r)/2-10,y+level_height,20,20));
 			frame.setVisible(true);
-			frame.getContentPane().add(new Edge(mid,y,(mid+x_r)/2,y+level_height));
+			frame.getContentPane().add(new Edge(mid+10,y+23,(mid+x_r)/2,y+level_height));
 
 			frame.setVisible(true);
 		}
