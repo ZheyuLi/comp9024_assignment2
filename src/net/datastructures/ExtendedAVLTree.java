@@ -172,7 +172,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		ArrayList<Entry<K,V>> merged_array = new ArrayList<Entry<K,V>>();
 
 		
-		while((tree1List.size()>0)&&(tree2List.size()>0))
+		while((!tree1List.isEmpty())&&(!tree2List.isEmpty()))
 		{
 			
 			while(!tree1List.isEmpty()&&(tree1List.first().element().element() == null))
@@ -183,12 +183,12 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			{
 				tree2List.remove(tree2List.first());
 			}
-			if(!tree1List.isEmpty()&&!tree2List.isEmpty()&&Integer.parseInt(tree1List.first().element().element().getKey().toString())< Integer.parseInt(tree2List.first().element().element().getKey().toString()))
+			if(!tree1List.isEmpty()&&!tree2List.isEmpty()&&Integer.parseInt(tree1List.first().element().element().getKey().toString()) < Integer.parseInt(tree2List.first().element().element().getKey().toString()))
 			{
 				merged_array.add(tree1List.first().element().element());
 				tree1List.remove(tree1List.first());
 			}
-			else
+			else if(!tree1List.isEmpty()&&!tree2List.isEmpty())
 			{	
 				if(!tree2List.isEmpty()){
 				merged_array.add(tree2List.first().element().element());
@@ -197,23 +197,30 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 
 		}
 
-		if(tree1List.size() == 0)
+		if(tree1List.isEmpty())
 		{
 			Iterator<Position<Entry<K,V>>> it2 = tree2List.iterator();
-			while(it2.hasNext())
-			{	
-				Entry<K,V> tmp_element = it2.next().element();
-				if(tmp_element != null){
-					merged_array.add(it2.next().element());}
-			}
+			while(it2.hasNext()){
+				Entry<K,V> tmp_element2 = it2.next().element();
+				if(tmp_element2 == null){
+					continue;
+				}
+				merged_array.add(tmp_element2);
+				}
 			
 		}
-		else if(tree2List.size() == 0)
+		else if(tree2List.isEmpty())
 		{
+			
 			Iterator<Position<Entry<K,V>>> it1 = tree1List.iterator();
-			Entry<K,V> tmp_element1 = it1.next().element();
-			if(tmp_element1 != null){
-				merged_array.add(it1.next().element());}
+			
+			while(it1.hasNext()){
+				Entry<K,V> tmp_element1 = it1.next().element();
+				if(tmp_element1 == null){
+					continue;
+				}
+				merged_array.add(tmp_element1);
+				}
 		}
 		int merged_tree_size = merged_array.size();
 		//merged_tree = merged_tree_size;
@@ -248,15 +255,19 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		//the following code is used to maintain the height of AVLtree. 
 		if((leftChild == null) && (rightChild == null))
 		{
+			parent.setLeft(merged_tree.createNode(null, parent, null, null));
+			parent.setRight(merged_tree.createNode(null, parent, null, null));
 			((AVLNode<K,V>)(parent)).setHeight(1);
 		}
 		else if(leftChild == null)
 		{
+			parent.setLeft(merged_tree.createNode(null, parent, null, null));
 			((AVLNode<K,V>)(parent)).setHeight(1+((AVLNode<K,V>)(rightChild)).height);
 		}
 		else if(rightChild == null)
 		{
 			((AVLNode<K,V>)(parent)).setHeight(1+((AVLNode<K,V>)(leftChild)).height);
+			parent.setRight(merged_tree.createNode(null, parent, null, null));
 		}
 		else
 		{
@@ -286,10 +297,10 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		treeFrame.setSize(frame_width, frame_height);
 		treeFrame.setTitle("COMP9024 Assignment Two - Question3");
 		treeFrame.setVisible(true);
-		treeFrame.setResizable(false); 
+		//treeFrame.setResizable(false); 
 		int height_of_tree = ((AVLNode<K,V>)(tree.root)).height;
-		System.out.println("the height of the whole tree is:");
-		System.out.print(height_of_tree);
+	//	System.out.println("the height of the whole tree is:");
+	//	System.out.print(height_of_tree);
 		int levels_nums = height_of_tree;
 		int level_height = (int)((frame_height/levels_nums)*0.8);
 		
@@ -312,32 +323,34 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		BTPosition<Entry<K,V>> rightChild = root.getRight();
 		if(leftChild.element()!=null)
 		{
+			frame.getContentPane().add(new Edge(mid+10,y+25,(x_l+mid)/2+10,y+level_height));
+			frame.setVisible(true);
 			drawSubTree(leftChild,frame,x_l,mid,y+level_height, level_height);
 			
 			frame.setVisible(true);
-			frame.getContentPane().add(new Edge(mid+10,y+23,(x_l+mid)/2+10,y+level_height));
-			frame.setVisible(true);
+
 		}
 		else if(leftChild.element()==null)
 		{
 			frame.getContentPane().add(new ExternalNode((x_l+mid)/2-10,y+level_height,20,20));
 			frame.setVisible(true);
-			frame.getContentPane().add(new Edge(mid+10,y+23,(x_l+mid)/2,y+level_height));
+			frame.getContentPane().add(new Edge(mid+10,y+25,(x_l+mid)/2,y+level_height));
 			frame.setVisible(true);
 		}
 		
 		if(rightChild.element()!=null)
 		{
+			frame.getContentPane().add(new Edge(mid+10,y+25,(mid+x_r)/2+10,y+level_height));
+			frame.setVisible(true);
 			drawSubTree(rightChild,frame,mid,x_r,y+level_height, level_height);
 			frame.setVisible(true);
-			frame.getContentPane().add(new Edge(mid+10,y+23,(mid+x_r)/2+10,y+level_height));
-			frame.setVisible(true);
+
 		}
 		else if(rightChild.element()==null)
 		{
 			frame.getContentPane().add(new ExternalNode((mid+x_r)/2-10,y+level_height,20,20));
 			frame.setVisible(true);
-			frame.getContentPane().add(new Edge(mid+10,y+23,(mid+x_r)/2,y+level_height));
+			frame.getContentPane().add(new Edge(mid+10,y+25,(mid+x_r)/2,y+level_height));
 
 			frame.setVisible(true);
 		}
