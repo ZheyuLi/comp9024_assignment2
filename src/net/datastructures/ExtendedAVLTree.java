@@ -317,7 +317,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		int mid = (x_l+x_r)/2;
 		frame.getContentPane().add(new InternalNode(mid,y,25));
 		frame.setVisible(true); //set the frame visable everytime or the new added component would not be displayed.
-		frame.getContentPane().add(new Labels((new StringBuilder(root.element().getKey().toString())).append(" ").append(root.element().getValue().toString()).toString(),mid+6,y+13));
+		frame.getContentPane().add(new Labels((new StringBuilder(root.element().getKey().toString())).append(" ").append(root.element().getValue().toString()).toString(),mid-25,y+13));
 		frame.setVisible(true);
 		BTPosition<Entry<K,V>> leftChild = root.getLeft();
 		BTPosition<Entry<K,V>> rightChild = root.getRight();
