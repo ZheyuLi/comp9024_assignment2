@@ -174,15 +174,18 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		
 		while((!tree1List.isEmpty())&&(!tree2List.isEmpty()))
 		{
-			
+			//we firstly remove all external nodes from the two lists. 
+			//still need to check whether treelist1 is empty again, because remove may make it empty. 
 			while(!tree1List.isEmpty()&&(tree1List.first().element().element() == null))
 			{
 				tree1List.remove(tree1List.first());
 			}
+			//still need to check whether treelist1 is empty again, because remove may make it empty. 
 			while(!tree2List.isEmpty()&&(tree2List.first().element().element() == null))
 			{
 				tree2List.remove(tree2List.first());
 			}
+			//double check if tree1list and tree2list are empty, because they might be empty after the last external node is deleted. 
 			if(!tree1List.isEmpty()&&!tree2List.isEmpty()&&Integer.parseInt(tree1List.first().element().element().getKey().toString()) < Integer.parseInt(tree2List.first().element().element().getKey().toString()))
 			{
 				merged_array.add(tree1List.first().element().element());
@@ -196,7 +199,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			}
 
 		}
-
+		//if tree1list is empty, just copy tree2list to the end of the merged_list
 		if(tree1List.isEmpty())
 		{
 			Iterator<Position<Entry<K,V>>> it2 = tree2List.iterator();
@@ -209,6 +212,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 				}
 			
 		}
+		//if tree2list is empty, just copy tree1list to the end of the merged_list
 		else if(tree2List.isEmpty())
 		{
 			
@@ -286,7 +290,13 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 
 		return parent;	
 	}
+	/*Q3:Print an AVLtree.
+	 */
 	
+	/*
+	 * Time complexity analysis. We use a recursive algorithm to print the AVLtree. The time for printing each node in the AVLtree is a constant.  
+	 * So the time complexity of this algorithm is O(n) where n is the number of nodes in the AVLtree. 
+	 */
 	public static <K, V> void print(AVLTree<K, V> tree)
 	{
 		JFrame treeFrame = new JFrame();
@@ -297,12 +307,9 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		treeFrame.setSize(frame_width, frame_height);
 		treeFrame.setTitle("COMP9024 Assignment Two - Question3");
 		treeFrame.setVisible(true);
-		//treeFrame.setResizable(false); 
 		int height_of_tree = ((AVLNode<K,V>)(tree.root)).height;
-	//	System.out.println("the height of the whole tree is:");
-	//	System.out.print(height_of_tree);
 		int levels_nums = height_of_tree;
-		int level_height = (int)((frame_height/levels_nums)*0.8);
+		int level_height = (int)((frame_height/levels_nums)*0.8); //control the height of each level according to the AVLtree's height.
 		
 		drawSubTree(tree.root,treeFrame,0,frame_width,(int)(0.02*frame_height), level_height);
 	}
@@ -321,6 +328,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 		frame.setVisible(true);
 		BTPosition<Entry<K,V>> leftChild = root.getLeft();
 		BTPosition<Entry<K,V>> rightChild = root.getRight();
+		//if leftChild is not external, then draw an internal node on the left.
 		if(leftChild.element()!=null)
 		{
 			frame.getContentPane().add(new Edge(mid+10,y+25,(x_l+mid)/2+10,y+level_height));
@@ -330,6 +338,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			frame.setVisible(true);
 
 		}
+		//if leftChild is external, then draw an external node on the left.
 		else if(leftChild.element()==null)
 		{
 			frame.getContentPane().add(new ExternalNode((x_l+mid)/2-10,y+level_height,20,20));
@@ -337,7 +346,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			frame.getContentPane().add(new Edge(mid+10,y+25,(x_l+mid)/2,y+level_height));
 			frame.setVisible(true);
 		}
-		
+		//if rightChild is not external, then draw an internal node on the right.
 		if(rightChild.element()!=null)
 		{
 			frame.getContentPane().add(new Edge(mid+10,y+25,(mid+x_r)/2+10,y+level_height));
@@ -346,6 +355,7 @@ public class ExtendedAVLTree<K,V> extends AVLTree<K,V>
 			frame.setVisible(true);
 
 		}
+		//if rightChild is external, then draw an external node on the right.
 		else if(rightChild.element()==null)
 		{
 			frame.getContentPane().add(new ExternalNode((mid+x_r)/2-10,y+level_height,20,20));
